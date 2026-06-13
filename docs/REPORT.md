@@ -36,10 +36,10 @@ Standard KD typically relies on minimizing the divergence between the final outp
 
 ### 4.3 Loss Functions
 The overall objective function during the KD training is a weighted sum of the primary task loss and the distillation loss:
-$$\mathcal{L}_{total} = \mathcal{L}_{task} + \lambda \mathcal{L}_{KD}$$
+$$\mathcal{L}\_{total} = \mathcal{L}\_{task} + \lambda \mathcal{L}\_{KD}$$
 
 * **Task Loss (Masked MAE)**: The ground truth depth maps in NYU Depth V2 contain invalid or unmeasured pixels (zeros). To prevent the network from learning false artifacts, I apply a boolean mask (`depths > 0`). The task loss is purely computed on valid depth pixels using Mean Absolute Error (L1 Loss):
-  $$\mathcal{L}_{L1} = \frac{1}{N_{valid}} \sum_{i \in valid} \left| y_i - \hat{y}_i \right|$$
+  $$\mathcal{L}\_{L1} = \frac{1}{N\_{valid}} \sum\_{i \in valid} \left| y\_i - \hat{y}\_i \right|$$
 * **Distillation Loss ($\mathcal{L}_{KD}$)**: Computes the feature alignment error between the Teacher's and Student's intermediate representations, projecting the Student's features to match the Teacher's channel dimensions where necessary.
 
 ## 5. Results and Discussion
