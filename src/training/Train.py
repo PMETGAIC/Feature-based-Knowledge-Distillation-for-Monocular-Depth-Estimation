@@ -19,10 +19,17 @@ def main():
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    save_dir = f"./experiments/checkpoints/{args.task}"
+    save_dir = f"./experiments/checkpoints/"
     os.makedirs(save_dir, exist_ok=True)
 
-    dm = NYUDataModule(batch_size=32, fraction=0.1 if not args.teacher else 1.0)  
+    if args.teacher:
+        fraction = 1.0
+    elif args.mini:
+        fraction = 0.1
+    else:
+        fraction = 0.5
+
+    dm = NYUDataModule(batch_size=32, fraction=fraction)
     dm.setup()
 
     if args.task == "baseline":
@@ -39,7 +46,7 @@ def main():
             
         task = EncoderDistillationTask.load_from_checkpoint(args.ckpt, student=student_base, teacher=t_model, strict=False, lr=1e-4) if args.mode == "finetune" and args.ckpt else EncoderDistillationTask(student_base, t_model, lr=1e-4)
 
-    csv_logger = CSVLogger(save_dir=f"{save_dir}/{args.task}", name=args.task)
+    csv_logger = CSVLogger(save_dir=save_dir, name=args.task)
     ckpt_cb = ModelCheckpoint(monitor="val/mae", mode="min", save_top_k=1, filename="best-{epoch:02d}-{val/mae:.4f}")
     es_cb = EarlyStopping(monitor="val/mae", min_delta=0.00, patience=10, verbose=False, mode="min")
     

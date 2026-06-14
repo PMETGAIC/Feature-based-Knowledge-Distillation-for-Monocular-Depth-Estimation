@@ -89,11 +89,11 @@ def main():
     if args.mini_base1: models["Mini1 Base (MBv3)"] = load_b(args.mini_base1, Timm_Depth(backbone='mobilenetv3_small_100'))
     if args.mini_kd1: models["Mini1 KD (MBv3)"] = load_k(args.mini_kd1, Timm_Depth(backbone='mobilenetv3_small_100'), Timm_Depth(backbone='resnet18'))
     if args.mini_base2: models["Mini2 Base (Cust)"] = load_b(args.mini_base2, Model_depth(3, 1, is_mini=True))
-    if args.mini_kd2: models["Mini2 KD (Cust)"] = load_k(args.mini_kd2, Model_depth(3, 1, is_mini=True), Timm_Depth(backbone='resnet50'))
+    if args.mini_kd2: models["Mini2 KD (Cust)"] = load_k(args.mini_kd2, Model_depth(3, 1, is_mini=True), Timm_Depth(backbone='resnet18'))
 
     models = {k: v for k, v in models.items() if v is not None}
 
-    idx = random.sample(range(len(dm.val_ds)), 50)
+    idx = random.sample(range(len(dm.val_ds)), 3)
     imgs, depths = torch.stack([dm.val_ds[i][0] for i in idx]).to(device), torch.stack([dm.val_ds[i][1] for i in idx]).to(device)
 
     preds_dict = {}
@@ -102,8 +102,8 @@ def main():
             out = task(imgs)
             preds_dict[name] = out[0] if isinstance(out, tuple) else out
 
-    save_comparison(imgs, depths, preds_dict, n=50)
-    save_error_maps(imgs, depths, preds_dict, n=50)
+    save_comparison(imgs, depths, preds_dict, n=3)
+    save_error_maps(imgs, depths, preds_dict, n=3)
     
     mae_results = {}
     for name, preds in preds_dict.items():
