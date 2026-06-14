@@ -26,5 +26,3 @@ def at_loss(s, t):
     s_map, t_map = F.interpolate(s.pow(2).mean(1, keepdim=True), size=t.shape[2:], mode='bilinear'), t.pow(2).mean(1, keepdim=True)
     return F.mse_loss(F.normalize(s_map.flatten(1), dim=1), F.normalize(t_map.flatten(1), dim=1))
 
-def tv_loss(p):
-    return torch.mean(torch.abs(p[:,:,1:,:] - p[:,:,:-1,:])) + torch.mean(torch.abs(p[:,:,:,1:] - p[:,:,:,:-1]))
